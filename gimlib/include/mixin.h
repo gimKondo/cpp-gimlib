@@ -29,13 +29,13 @@ namespace GimLib {
 ************************************************************************/
 template <typename THIS_TYPE, typename FEATURE_LIST> class MixinBase;
 
-template <typename THIS_TYPE, typename T, typename U>
-class MixinBase< THIS_TYPE, Typelist<T, U> > : public T, public MixinBase<THIS_TYPE, U>
+template <typename THIS_TYPE, template <class> class T, typename U>
+class MixinBase< THIS_TYPE, Typelist<T<THIS_TYPE>, U > > : public T<THIS_TYPE>, public MixinBase<THIS_TYPE, U>
 {
 };
 
-template <typename THIS_TYPE, typename T>
-class MixinBase< THIS_TYPE, Typelist< T, NullType> > : public T
+template <typename THIS_TYPE, template <class> class T>
+class MixinBase< THIS_TYPE, Typelist< T<THIS_TYPE>, NullType> > : public T<THIS_TYPE>
 {
 };
 

@@ -1,7 +1,7 @@
 #ifndef INCLUDED_GIMLIB_MIXIN
 #define INCLUDED_GIMLIB_MIXIN
 
-#include "TypeList.h"
+#include "TemplateList.h"
 
 /////////////////////////////////////////////////////
 namespace GimLib {
@@ -10,15 +10,16 @@ namespace GimLib {
 /***********************************************************************/
 /*!	@brief helper class for creating class that mixed in features
 ************************************************************************
-	@par Method
-		 Name                   | Summary
-		------------------------|-------------------------------
-		                        | 
-************************************************************************
 	@detail
 		You can mix-in features, if you extend from this class
 		that receiving feature class as type parameter.
-		Features are passed as TypeList.
+
+		Mix-in classes can use members of mix-in class,
+		if you cast this pointer to THIS_TYPE's pointer type.
+		Yes, this is a kind of duck typing.
+
+		Features are passed as TemplateList (refer to next sample).
+		
 	@code
 		// feature class 1
 		template <typename THIS_TYPE> struct Sum
@@ -40,7 +41,7 @@ namespace GimLib {
 		};
 
 		// mixed-in class
-		struct MixedinClass : public MixinBase<MixedinClass, TYPELIST_2(Sum<MixedinClass>, Sub<MixedinClass>)>
+		struct MixedinClass : public MixinBase<TEMPLATELIST_2(MixedinClass, Sum, Sub)>
 		{
 			MixedinClass(int n1, int n2)
 				: num1(n1), num2(n2)
@@ -51,23 +52,18 @@ namespace GimLib {
 	@endcode
 ************************************************************************
 	@note
-		now writing...
+		- now writing...
 ************************************************************************
 	@author		gim_kondo
 	@version	1.0
 	@date		2012/10/14
 ************************************************************************/
-template <typename THIS_TYPE, typename FEATURE_LIST> class MixinBase;
+template <typename FEATURE_LIST> class MixinBase;
 
 template <typename THIS_TYPE, template <class> class T, typename U>
-class MixinBase< THIS_TYPE, Typelist<T<THIS_TYPE>, U > > : public T<THIS_TYPE>, public MixinBase<THIS_TYPE, U>
-{
-};
-
-template <typename THIS_TYPE, template <class> class T>
-class MixinBase< THIS_TYPE, Typelist< T<THIS_TYPE>, NullType> > : public T<THIS_TYPE>
-{
-};
+class MixinBase<TemplateList<THIS_TYPE, T, U > > : public T<THIS_TYPE>, public MixinBase<U> { };
+// end of FEATURE_LIST
+template <> class MixinBase<NullType> { };
 
 /////////////////////////////////////////////////////
 } // end namespace GimLib

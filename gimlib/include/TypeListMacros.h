@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INCLUDED_GIMLIB_TYPELISTMACROS
+#define INCLUDED_GIMLIB_TYPELISTMACROS
 
 
 #define TYPELIST_1(T1) GimLib::Typelist<T1, GimLib::NullType>
@@ -53,3 +54,5 @@
         T11, T12, T13, T14, T15, T16) \
     GimLib::Typelist<T1, TYPELIST_15(T2, T3, T4, T5, T6, T7, T8, T9, T10, \
         T11, T12, T13, T14, T15, T16) >
+
+#endif

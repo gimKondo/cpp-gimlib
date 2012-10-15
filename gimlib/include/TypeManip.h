@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INCLUDED_GIMLIB_TYPEMANIP
+#define INCLUDED_GIMLIB_TYPEMANIP
 
 namespace GimLib {
 
@@ -152,4 +153,7 @@ struct SuperSubclassStrict<T, void>
     //コンパイラにTの完全な定義を作成させるためのダミー
     enum{ dontUseWithIncompleteTypes = ( sizeof (T) == 0 ) };
 };
+
 }
+
+#endif

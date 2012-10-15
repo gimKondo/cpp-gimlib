@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INCLUDED_GIMLIB_TYPELIST
+#define INCLUDED_GIMLIB_TYPELIST
 
 #include "TypeManip.h"
 #include "TypeListMacros.h"
@@ -347,3 +348,5 @@ namespace TL {
 } // end namespace TL
 } // end namespace GimLib
 /////////////////////////////////////////////////////
+
+#endif

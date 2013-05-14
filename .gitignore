@@ -1,0 +1,17 @@
+# ignore compiler product files
+*.obj
+*.lib
+*.exe
+*.pdb
+Debug/
+Release/
+obj/
+html/
+
+# ignore user setting files created by Visual Studio
+*.suo
+*.vcxproj.user
+
+# ignore editor temporary files
+*~
+*.swp

@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include <map>
+#include <type_traits>
 
 /////////////////////////////////////////////////////
 namespace GimLib	{
@@ -46,6 +47,35 @@ namespace GimLib	{
 namespace Linq		{
 /////////////////////////////////////////////////////
 
+template <typename T> struct is_pass_as_value
+{
+	static const bool value = std::is_fundamental<T>::value || std::is_enum<T>::value;
+};
+
+template <typename ELM, bool IS_PASS_AS_VALUE = is_pass_as_value<ELM>::value> struct CondType
+{
+	typedef ELM ElmType;
+	typedef std::function<bool(ElmType)> Type;
+};
+template <typename ELM> struct CondType<ELM, false>
+{
+	typedef const ELM& ElmType;
+	typedef std::function<bool(ElmType)> Type;
+};
+
+template <typename ELM, typename RET, bool IS_PASS_AS_VALUE = is_pass_as_value<ELM>::value> struct ConvType
+{
+	typedef ELM ElmType;
+	typedef RET RetType;
+	typedef std::function<RET(ElmType)> Type;
+};
+template <typename ELM, typename RET> struct ConvType<ELM, RET, false>
+{
+	typedef const ELM& ElmType;
+	typedef RET RetType;
+	typedef std::function<RET(ElmType)> Type;
+};
+
 /***********************************************************************/
 /*!	@class Where_t
 	@brief express Where section on LINQ
@@ -56,10 +86,11 @@ template <typename ELM>
 class Where_t
 {
 public:
-	typedef std::function<bool(const ELM&)> Cond;
-	Where_t(const Cond& cond) : cond_(cond) {}
+	typedef typename CondType<ELM>::Type Cond;
+	typedef typename CondType<ELM>::ElmType ElmType;
+	Where_t(Cond cond) : cond_(cond) {}
 	Cond cond_;
-	bool operator()(const ELM& elm) { return cond_(elm); }
+	bool operator()(ElmType elm) { return cond_(elm); }
 };
 
 /***********************************************************************/
@@ -76,6 +107,11 @@ Where_t<ELM> Where(std::function<bool(const ELM&)> cond)
 {
 	return Where_t<ELM>(cond);
 }
+template <typename ELM>
+Where_t<ELM> Where(std::function<bool(ELM)> cond)
+{
+	return Where_t<ELM>(cond);
+}
 
 /***********************************************************************/
 /*!	@class Select_t
@@ -87,10 +123,11 @@ template <typename RType, typename OType>
 class Select_t
 {
 public:
-	typedef std::function<RType(const OType&)> Conv;
-	Select_t(const Conv& conv) : conv_(conv) {}
+	typedef typename ConvType<OType, RType>::Type Conv;
+	typedef typename ConvType<OType, RType>::ElmType ElmType;
+	Select_t(Conv conv) : conv_(conv) {}
 	Conv conv_;
-	RType operator()(const OType& o) { return conv_(o); }
+	RType operator()(ElmType o) { return conv_(o); }
 };
 
 /***********************************************************************/
@@ -102,10 +139,15 @@ public:
 ************************************************************************
 	@details
 ************************************************************************/
-template <typename RType, typename OType>
-Select_t<RType, OType> Select(const std::function<RType(const OType&)>& conv)
+template <typename RET, typename ELM>
+Select_t<RET, ELM> Select(const std::function<RET(const ELM&)>& conv)
 {
-	return Select_t<RType, OType>(conv);
+	return Select_t<RET, ELM>(conv);
+}
+template <typename RET, typename ELM>
+Select_t<RET, ELM> Select(const std::function<RET(ELM)>& conv)
+{
+	return Select_t<RET, ELM>(conv);
 }
 
 

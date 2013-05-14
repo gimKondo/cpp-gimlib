@@ -42,6 +42,11 @@ protected:
 	@brief make vector that contained elements
 ************************************************************************
 	@details
+		you can get vector contained 1, 2 and 3, by following code.
+	@code
+		std::vector<int> vec0 = make_vector<int>(1)(2)(3);
+		std::vector<int> vec1 = (make_vector<int>(),1,2,3);
+	@endcode
 ************************************************************************/
 template <typename T> struct make_vector
 	: public Private::make_push_back_container<make_vector<T>, std::vector<T>>

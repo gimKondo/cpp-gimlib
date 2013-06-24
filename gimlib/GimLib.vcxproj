@@ -17,6 +17,7 @@
     <ClInclude Include="include\Linq.h" />
     <ClInclude Include="include\Matrix.h" />
     <ClInclude Include="include\mixin.h" />
+    <ClInclude Include="include\Repository.h" />
     <ClInclude Include="include\stl_extension.h" />
     <ClInclude Include="include\TemplateList.h" />
     <ClInclude Include="include\TypeCast.h" />

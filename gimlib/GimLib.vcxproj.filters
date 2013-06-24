@@ -42,5 +42,8 @@
     <ClInclude Include="include\container_make.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Repository.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

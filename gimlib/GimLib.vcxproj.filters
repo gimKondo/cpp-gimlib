@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{5d677637-7282-429a-8d5f-218cc872767f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\extendable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stl_extension.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TypeList.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TypeListMacros.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TypeManip.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mixin.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TemplateList.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TypeCast.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GridSheet.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Linq.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\container_make.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

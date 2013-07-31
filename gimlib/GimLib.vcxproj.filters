@@ -45,5 +45,8 @@
     <ClInclude Include="include\Repository.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\RepositoryEntityMacro.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <functional>
 #include <algorithm>
 
@@ -14,121 +15,269 @@
 namespace GimLib {
 ///////////////////////////////////////
 
+/***********************************************************************/
+/*!	@brief value type of field
+************************************************************************
+	@details
+************************************************************************
+	@note
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+enum RPS_ValueType
+{
+	RPS_VT_INT		,
+	RPS_VT_DOUBLE	,
+	RPS_VT_STRING	,
+};
+
+/***********************************************************************/
+/*!	@brief Field infomaton on Repository
+************************************************************************
+	@details
+		
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct RPS_FieldInfo
+{
+	RPS_FieldInfo(RPS_ValueType vt, const std::wstring& name)
+		: ValueType(vt), Name(name)
+	{}
+	RPS_ValueType	ValueType;
+	std::wstring	Name;
+};
+
+/***********************************************************************/
+/*!	@brief data of field
+************************************************************************
+	@details
+************************************************************************
+	@par
+		name		| expression
+	---------------------------------------------
+		ValueType	| data type
+		HasData		| has data or not
+		IntData		| data as integer
+		DoubleData	| data as double
+		StringData	| data as string
+************************************************************************
+	@note
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct RPS_FieldData
+{
+	RPS_FieldData() : ValueType(RPS_VT_INT), HasData(false) {}
+	explicit RPS_FieldData(int					data) : ValueType(RPS_VT_INT	), HasData(true), IntData	(data) {}
+	explicit RPS_FieldData(double				data) : ValueType(RPS_VT_DOUBLE	), HasData(true), DoubleData(data) {}
+	explicit RPS_FieldData(const std::wstring&	data) : ValueType(RPS_VT_STRING	), HasData(true), StringData(data) {}
+	explicit RPS_FieldData(RPS_ValueType	vt	) : ValueType(vt), HasData(false) {}
+	RPS_ValueType	ValueType	;
+	bool			HasData		;
+	union {
+		int			IntData		;
+		double		DoubleData	;
+	};
+	std::wstring	StringData	;
+public:
+	std::wstring ToString() const
+	{
+		if (!HasData) {
+			return L"";
+		}
+		else if (ValueType == RPS_VT_STRING) {
+			return StringData;
+		}
+		else if (ValueType == RPS_VT_INT) {
+			std::wstringstream ss;
+			ss << IntData;
+			return ss.str();
+		}
+		else if (ValueType == RPS_VT_DOUBLE) {
+			std::wstringstream ss;
+			ss << DoubleData;
+			return ss.str();
+		}
+		return L"";
+	}
+};
+
+// constance that expressing empty data of field
+const RPS_FieldData RPS_EMPTY_FIELD;
+
+
+struct LeafCond;
+struct AndCond;
+struct OrCond;
+
+/***********************************************************************/
+/*!	@brief Interface of condition builder
+************************************************************************
+	@details
+		
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+class CondBuilder
+{
+public:
+	virtual void visit(const LeafCond*	cond) = 0;
+	virtual void visit(const AndCond*	cond) = 0;
+	virtual void visit(const OrCond*	cond) = 0;
+};
+
+/***********************************************************************/
+/*!	@brief Interface of condition section
+************************************************************************
+	@details
+		
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct IWhereCond
+{
+	virtual ~IWhereCond() {}
+	virtual void acceptCondBuilder(CondBuilder& builder) = 0;
+};
+
+// type of comparation
 enum CondCompareType
 {
 	COND_EQ, COND_NEQ, COND_LT, COND_LTE, COND_GT, COND_GTE,
 };
 
-template <typename ENTITY> struct LeafCond;
-template <typename ENTITY> struct AndCond;
-template <typename ENTITY> struct OrCond;
-
-//--------------------------------
-// Interface of condition builder
-//--------------------------------
-template <typename ENTITY>
-class CondBuilder
+/***********************************************************************/
+/*!	@brief Condition section
+************************************************************************
+	@details
+		
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct LeafCond : public IWhereCond
 {
-public:
-	virtual void visit(const LeafCond<ENTITY>*	cond) = 0;
-	virtual void visit(const AndCond<ENTITY>*	cond) = 0;
-	virtual void visit(const OrCond<ENTITY>*	cond) = 0;
-};
-
-//--------------------------------
-// Interface of condition section
-//--------------------------------
-template <typename ENTITY> struct IWhereCond
-{
-	virtual ~IWhereCond() {}
-	virtual void acceptCondBuilder(CondBuilder<ENTITY>& builder) = 0;
-};
-
-//--------------------------------
-// Condition section
-//--------------------------------
-template <typename ENTITY> struct LeafCond : public IWhereCond<ENTITY>
-{
-	LeafCond(const std::wstring& key, const std::wstring& val, CondCompareType cmpr)
-		: Key(key), Value(val), Cmpr(cmpr)
+	LeafCond(const std::wstring& key, int nVal, CondCompareType cmpr = COND_EQ)
+		: Key(key), Value(nVal), Cmpr(cmpr)
 	{}
-	virtual void acceptCondBuilder(CondBuilder<ENTITY>& builder) override { return builder.visit(this); }
+	LeafCond(const std::wstring& key, double nVal, CondCompareType cmpr = COND_EQ)
+		: Key(key), Value(nVal), Cmpr(cmpr)
+	{}
+	LeafCond(const std::wstring& key, const std::wstring& strVal, CondCompareType cmpr = COND_EQ)
+		: Key(key), Value(strVal), Cmpr(cmpr)
+	{}
+	LeafCond(const std::wstring& key, const RPS_FieldData& data, CondCompareType cmpr = COND_EQ)
+		: Key(key), Value(data), Cmpr(cmpr)
+	{}
+	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
 	std::wstring	Key		;
-	std::wstring	Value	;
+	RPS_FieldData	Value	;
 	CondCompareType	Cmpr	;
 };
 
-//--------------------------------
-// AND condition
-//--------------------------------
-template <typename ENTITY> struct AndCond : public IWhereCond<ENTITY>
+/***********************************************************************/
+/*!	@brief AND condition
+************************************************************************
+	@details
+		
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct AndCond : public IWhereCond
 {
 	AndCond(IWhereCond* cond1, IWhereCond* cond2)
 		:Cond1(cond1), Cond2(cond2)
 	{}
-	virtual void acceptCondBuilder(CondBuilder<ENTITY>& builder) override { return builder.visit(this); }
+	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
 	std::shared_ptr<IWhereCond> Cond1;
 	std::shared_ptr<IWhereCond> Cond2;
 };
 
-//--------------------------------
-// OR condition
-//--------------------------------
-template <typename ENTITY> struct OrCond : public IWhereCond<ENTITY>
+/***********************************************************************/
+/*!	@brief OR condition
+************************************************************************
+	@details
+		
+	@code
+	@endcode
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
+struct OrCond : public IWhereCond
 {
 	OrCond(IWhereCond* cond1, IWhereCond* cond2)
 		:Cond1(cond1), Cond2(cond2)
 	{}
-	virtual void acceptCondBuilder(CondBuilder<ENTITY>& builder) override { return builder.visit(this); }
+	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
 	std::shared_ptr<IWhereCond> Cond1;
 	std::shared_ptr<IWhereCond> Cond2;
 };
 
-
-
-//Valude type on Repository
-enum DB_ValueType
-{
-	DB_VT_INT	,
-	DB_VT_STRING,
-};
-
-//Field infomaton on Repository
-struct DB_FieldInfo
-{
-	DB_FieldInfo(DB_ValueType vt, const std::wstring& kname, bool isPrimaryKey)
-		: VType(vt), KName(kname), IsPrimaryKey(isPrimaryKey)
-	{}
-	DB_ValueType	VType;
-	std::wstring	KName;
-	bool			IsPrimaryKey;
-};
-
-//Field data on Repository
-struct DB_FieldData
-{
-	DB_FieldData(DB_ValueType vt, const std::wstring& kname, bool isPrimaryKey, std::wstring& data)
-		: FieldInfo(vt, kname, isPrimaryKey), StringData(data)
-	{}
-	DB_FieldData(DB_ValueType vt, const std::wstring& kname, bool isPrimaryKey, int data)
-		: FieldInfo(vt, kname, isPrimaryKey), IntData(data)
-	{}
-	DB_FieldInfo	FieldInfo;
-	int				IntData;
-	std::wstring	StringData;
-};
-
-//--------------------------------
-// Interface of Repository
-//--------------------------------
+/***********************************************************************/
+/*!	@brief Interface of Repository
+************************************************************************
+	@details
+		
+	@code
+	@endcode
+************************************************************************
+	@par
+		name		| expression
+	-----------------------------------------------------
+		findAll		| (1) get all records
+		 			| (2) get all records that satisfyed condition
+		findFirst	| get first record  that satisfyed condition
+		insert		| insert record
+		update		| update record
+		remove		| remove record
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/6/24
+************************************************************************/
 template <typename ENTITY> class IRepository
 {
 public:
-	virtual void setup() = 0;
 	virtual std::vector<ENTITY> findAll() = 0;
-	virtual std::vector<ENTITY> findAll(const std::shared_ptr<IWhereCond<ENTITY>>& cond) = 0;
-	virtual std::shared_ptr<ENTITY> findFirst(const std::shared_ptr<IWhereCond<ENTITY>>& cond) = 0;
+	virtual std::vector<ENTITY> findAll(const std::shared_ptr<IWhereCond>& cond) = 0;
+	virtual std::shared_ptr<ENTITY> findFirst(const std::shared_ptr<IWhereCond>& cond) = 0;
 	virtual bool insert(const ENTITY& entity) = 0;
+	virtual bool update(const std::shared_ptr<IWhereCond>& cond, const ENTITY& entity) = 0;
+	virtual bool remove(const std::shared_ptr<IWhereCond>& cond) = 0;
 };
 
 ///////////////////////////////////////

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="include\container_make.h" />
     <ClInclude Include="include\extendable.h" />
+    <ClInclude Include="include\extend_method.h" />
     <ClInclude Include="include\GridSheet.h" />
     <ClInclude Include="include\Linq.h" />
     <ClInclude Include="include\Matrix.h" />

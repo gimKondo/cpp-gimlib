@@ -70,7 +70,7 @@ TEST(ExntedMethodTest, VectorMethod)
 	auto widArr = (GimLib::make_vector<Widget>()
 		, Widget( 39, "sample", 20.0 )
 		, Widget( 39, "sample", 20.0 )
-		, Widget( 39, "sample", 20.0 ) );
+		, Widget( 39, "sample", 20.0 ) )();
 	EXPECT_DOUBLE_EQ(60.0, widArr->*WeightSum());
 }
 	

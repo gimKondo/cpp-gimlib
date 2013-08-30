@@ -5,6 +5,7 @@
 #include <list>
 #include <deque>
 #include <set>
+#include <map>
 
 /////////////////////////////////////////////////////
 namespace GimLib	{
@@ -108,6 +109,27 @@ template <typename T> struct make_set
 	explicit make_set(const T& e) { c_.insert(e); }
 private:
 	std::set<T> c_;
+};
+
+/***********************************************************************/
+/*!	@class make_map
+	@brief make map that contained elements
+************************************************************************
+	@details
+************************************************************************/
+template <typename KEY, typename VAL> struct make_map
+{
+	make_map& operator()(const KEY& key, const VAL& val)
+	{
+		c_[key] = val;
+		return *this;
+	}
+	std::map<KEY, VAL> operator()() { return std::move(c_); }
+	operator std::map<KEY, VAL>() { return std::move(c_); }
+	make_map() { }
+	make_map(const KEY& key, const VAL& val) { c_[key] = val; }
+private:
+	std::map<KEY, VAL> c_;
 };
 
 /////////////////////////////////////////////////////

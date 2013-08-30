@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "picotest.h"
 #include "include/stl_extension.h"
+#include "include/container_make.h"
 
 using GimLib::StlExt::has	;
 using GimLib::StlExt::hasKey;
@@ -127,6 +128,15 @@ TEST(TestStlExt, concat)
 	}
 	nums1|concat(nums2);
 	EXPECT_EQ (6, nums1.size());
+}
+//make_map
+TEST(TestStlExt, makeMap)
+{
+	auto trg = GimLib::make_map<int,char>(1,'a')(2,'b')(3,'c')(4,'d')();
+	EXPECT_EQ ('a', trg[1]);
+	EXPECT_EQ ('b', trg[2]);
+	EXPECT_EQ ('c', trg[3]);
+	EXPECT_EQ ('d', trg[4]);
 }
 
 

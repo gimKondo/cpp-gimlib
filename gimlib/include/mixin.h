@@ -10,7 +10,7 @@ namespace GimLib {
 /***********************************************************************/
 /*!	@brief helper class for creating class that mixed in features
 ************************************************************************
-	@detail
+	@details
 		You can mix-in features, if you extend from this class
 		that receiving feature class as type parameter.
 
@@ -64,6 +64,52 @@ template <typename THIS_TYPE, template <class> class T, typename U>
 class MixinBase<TemplateList<THIS_TYPE, T, U > > : public T<THIS_TYPE>, public MixinBase<U> { };
 // end of FEATURE_LIST
 template <> class MixinBase<NullType> { };
+
+
+/***********************************************************************/
+/*!	@brief helper class for creating class that mixing in features
+************************************************************************
+	@details
+		
+	@code
+		// feature class 1
+		MIXIN_CLASS_DEFINE(Sum)
+		{
+			int sum()
+			{
+				// You can access mixed-in class's object by This()
+				return This()->num1 + This()->num2;
+			}
+		};
+
+		// mixed-in class
+		struct MixedinClass : public MixinBase<TEMPLATELIST_1(MixedinClass, Sum)>
+		{
+			MixedinClass(int n1, int n2)
+				: num1(n1), num2(n2)
+			{}
+			int num1;
+			int num2;
+		};
+	@endcode
+************************************************************************
+	@note
+		- now writing...
+************************************************************************
+	@author		gim_kondo
+	@version	1.0
+	@date		2013/08/30
+************************************************************************/
+template <typename THIS_TYPE, typename MIXIN> struct MixinFeatureBase
+{
+	THIS_TYPE* This() { return static_cast<THIS_TYPE*>(this); }
+	const THIS_TYPE* This() const { return static_cast<const THIS_TYPE*>(this); }
+};
+
+#define MIXIN_CLASS_DEFINE(classname)	\
+	template <typename THIS_TYPE>		\
+	struct classname : MixinFeatureBase<THIS_TYPE, classname<THIS_TYPE> >
+
 
 /////////////////////////////////////////////////////
 } // end namespace GimLib

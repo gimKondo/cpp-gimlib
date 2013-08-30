@@ -5,35 +5,31 @@
 
 
 using GimLib::MixinBase;
+using GimLib::MixinFeatureBase;
 using namespace GimLib::TL;
-
-#define TYPELIST_P1_1(P, T1) TYPELIST_1(T1<P>)
-#define TYPELIST_P1_2(P, T1, T2) TYPELIST_2(T1<P>, T2<P>)
 
 //////////////////////////////////////////////////
 namespace {
 //////////////////////////////////////////////////
 
 //-----------------------------------
-// テスト用クラス
+// test target
 //-----------------------------------
-template <typename THIS_TYPE> struct Sum
+MIXIN_CLASS_DEFINE(Sum)
 {
 	Sum() : sum_num(8) {}
 	int sum()
 	{
-		THIS_TYPE* this_ = static_cast<THIS_TYPE*>(this);
-		return this_->num1 + this_->num2;
+		return This()->num1 + This()->num2;
 	}
 	int sum_num;
 };
-template <typename THIS_TYPE> struct Sub
+MIXIN_CLASS_DEFINE(Sub)
 {
 	Sub() : sub_num(4) {}
 	int sub()
 	{
-		THIS_TYPE* this_ = static_cast<THIS_TYPE*>(this);
-		return this_->num1 - this_->num2;
+		return This()->num1 - This()->num2;
 	}
 	int sub_num;
 };
@@ -49,7 +45,7 @@ struct MixedinClass : public MixinBase<TEMPLATELIST_2(MixedinClass, Sum, Sub)>
 
 
 //-----------------------------------
-// テストケース
+// test case
 //-----------------------------------
 //
 TEST(MixinClassTest, hoge)

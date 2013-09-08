@@ -154,7 +154,8 @@ public:
 struct IWhereCond
 {
 	virtual ~IWhereCond() {}
-	virtual void acceptCondBuilder(CondBuilder& builder) = 0;
+	virtual void acceptCondBuilder(CondBuilder& builder) const = 0;
+	virtual IWhereCond* clone() const = 0;
 };
 
 // type of comparation
@@ -190,7 +191,8 @@ struct LeafCond : public IWhereCond
 	LeafCond(const std::wstring& key, const RPS_FieldData& data, CondCompareType cmpr = COND_EQ)
 		: Key(key), Value(data), Cmpr(cmpr)
 	{}
-	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
+	virtual void acceptCondBuilder(CondBuilder& builder) const override { return builder.visit(this); }
+	virtual LeafCond* clone() const { return new LeafCond(*this); }
 	std::wstring	Key		;
 	RPS_FieldData	Value	;
 	CondCompareType	Cmpr	;
@@ -214,7 +216,11 @@ struct AndCond : public IWhereCond
 	AndCond(IWhereCond* cond1, IWhereCond* cond2)
 		:Cond1(cond1), Cond2(cond2)
 	{}
-	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
+	AndCond(const IWhereCond& cond1, const IWhereCond& cond2)
+		:Cond1(cond1.clone()), Cond2(cond2.clone())
+	{}
+	virtual void acceptCondBuilder(CondBuilder& builder) const override { return builder.visit(this); }
+	virtual AndCond* clone() const { return new AndCond(*this); }
 	std::shared_ptr<IWhereCond> Cond1;
 	std::shared_ptr<IWhereCond> Cond2;
 };
@@ -239,10 +245,24 @@ struct OrCond : public IWhereCond
 	OrCond(IWhereCond* cond1, IWhereCond* cond2)
 		:Cond1(cond1), Cond2(cond2)
 	{}
-	virtual void acceptCondBuilder(CondBuilder& builder) override { return builder.visit(this); }
+	virtual void acceptCondBuilder(CondBuilder& builder) const override { return builder.visit(this); }
+	virtual OrCond* clone() const { return new OrCond(*this); }
 	std::shared_ptr<IWhereCond> Cond1;
 	std::shared_ptr<IWhereCond> Cond2;
 };
+
+
+/***********************************************************************/
+/*!	@brief operators for creating composite condition
+************************************************************************/
+inline AndCond operator&(const IWhereCond& cond1, const IWhereCond& cond2)
+{
+	return AndCond( cond1.clone(), cond2.clone());
+}
+inline OrCond operator|(const IWhereCond& cond1, const IWhereCond& cond2)
+{
+	return OrCond( cond1.clone(), cond2.clone());
+}
 
 /***********************************************************************/
 /*!	@brief Interface of Repository
@@ -273,11 +293,11 @@ template <typename ENTITY> class IRepository
 {
 public:
 	virtual std::vector<ENTITY> findAll() = 0;
-	virtual std::vector<ENTITY> findAll(const std::shared_ptr<IWhereCond>& cond) = 0;
-	virtual std::shared_ptr<ENTITY> findFirst(const std::shared_ptr<IWhereCond>& cond) = 0;
+	virtual std::vector<ENTITY> findAll(const IWhereCond& cond) = 0;
+	virtual std::shared_ptr<ENTITY> findFirst(const IWhereCond& cond) = 0;
 	virtual bool insert(const ENTITY& entity) = 0;
-	virtual bool update(const std::shared_ptr<IWhereCond>& cond, const ENTITY& entity) = 0;
-	virtual bool remove(const std::shared_ptr<IWhereCond>& cond) = 0;
+	virtual bool update(const IWhereCond& cond, const ENTITY& entity) = 0;
+	virtual bool remove(const IWhereCond& cond) = 0;
 };
 
 ///////////////////////////////////////

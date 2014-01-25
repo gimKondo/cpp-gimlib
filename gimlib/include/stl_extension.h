@@ -213,13 +213,13 @@ operator| (std::list<VAL>& src, FUNC func)
 }
 //vector
 template <typename VAL, typename FUNC>
-inline typename std::result_of<FUNC(const std::vector<VAL>&)>::type
+inline typename std::result_of<FUNC(std::vector<VAL>&)>::type
 operator| (const std::vector<VAL>& src, FUNC func)
 {
 	return func(src);
 }
 template <typename VAL, typename FUNC>
-inline typename std::result_of<FUNC(const std::vector<VAL>&)>::type
+inline typename std::result_of<FUNC(std::vector<VAL>&)>::type
 operator| (std::vector<VAL>& src, FUNC func)
 {
 	return func(src);

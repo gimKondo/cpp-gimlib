@@ -8,6 +8,7 @@
 #include <sstream>
 #include <functional>
 #include <algorithm>
+#include <memory>
 
 #include "container_make.h"
 

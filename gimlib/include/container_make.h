@@ -6,33 +6,89 @@
 #include <deque>
 #include <set>
 #include <map>
+#include <memory>
 
 /////////////////////////////////////////////////////
 namespace GimLib	{
 /////////////////////////////////////////////////////
 
+/***********************************************************************/
+/*!	@class ElementTypePolicyRawType
+	@brief raw element policy
+************************************************************************
+	@details
+        
+************************************************************************/
+template <typename T> struct ElementTypePolicyRawType
+{
+    typedef T Type;
+};
+/***********************************************************************/
+/*!	@class ElementTypePolicySharedPtr
+	@brief shared_ptr element policy
+************************************************************************
+	@details
+        
+************************************************************************/
+template <typename T> struct ElementTypePolicySharedPtr
+{
+    typedef std::shared_ptr<T> Type;
+};
+
+/***********************************************************************/
+/*!	@class ElementCreatePolicyConstructor
+	@brief create policy that create by constructor
+************************************************************************
+	@details
+        
+************************************************************************/
+template <typename T> struct ElementCreatePolicyConstructor
+{
+    template <class... ARGS>
+    static T Create(ARGS... args) { return T(args...); }
+};
+/***********************************************************************/
+/*!	@class ElementCreatePolicyMakeShared
+	@brief create policy that create by make_shared
+************************************************************************
+	@details
+        
+************************************************************************/
+template <typename T> struct ElementCreatePolicyMakeShared
+{
+    template <class... ARGS>
+    static std::shared_ptr<T> Create(ARGS... args) { return std::make_shared<T>(args...); }
+};
+
 /////////////////////////////////////////////////////
 namespace Private {
 /////////////////////////////////////////////////////
-template <typename D, typename CONTAINER> struct make_push_back_container
+template < typename DERIVED
+         , typename CONTAINER
+         , typename VALUE_TYPE
+         , typename ELM_TYPE
+         , typename CREATOR
+         >
+         struct make_push_back_container
 {
-	typedef typename CONTAINER::value_type VALUE;
-	D& operator()(const VALUE& e)
+    typedef ELM_TYPE ELEMENT;
+	DERIVED& operator()(const ELM_TYPE& e)
 	{
 		c_.push_back(e);
-		return static_cast<D&>(*this);
+		return static_cast<DERIVED&>(*this);
 	}
-	D& operator,(const VALUE& e)
+    template <class... ARGS>
+	DERIVED& operator()(ARGS... args)
 	{
-		c_.push_back(e);
-		return static_cast<D&>(*this);
+		c_.push_back(CREATOR::Create(args...));
+		return static_cast<DERIVED&>(*this);
 	}
-	CONTAINER operator()() { return std::move(c_); }
-	operator CONTAINER() { return std::move(c_); }
+	CONTAINER operator--(int) { return std::move(c_); }
 protected:
 	CONTAINER c_;
-	make_push_back_container() {}
-	explicit make_push_back_container(const VALUE& e) { c_.push_back(e); }
+	explicit make_push_back_container(const ELM_TYPE& e) { c_.push_back(e); }
+    template <class... ARGS>
+	make_push_back_container(ARGS... args) { c_.push_back(CREATOR::Create(args...)); }
 };
 /////////////////////////////////////////////////////
 } // end namespace Private
@@ -45,16 +101,33 @@ protected:
 	@details
 		you can get vector contained 1, 2 and 3, by following code.
 	@code
-		std::vector<int> vec0 = make_vector<int>(1)(2)(3);
-		std::vector<int> vec1 = (make_vector<int>(),1,2,3);
+		std::vector<int> vec0 = make_vector<int>(1)(2)(3)--;
 	@endcode
 ************************************************************************/
-template <typename T> struct make_vector
-	: public Private::make_push_back_container<make_vector<T>, std::vector<T>>
+template < typename T
+         , template <typename T> class ElementTypePolicy = ElementTypePolicyRawType
+         , template <typename T> class ElementCreatePolicy = ElementCreatePolicyConstructor
+         >
+struct make_vector
+	: public Private::make_push_back_container
+        < make_vector<T, ElementTypePolicy, ElementCreatePolicy>
+        , std::vector<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
 {
-	typedef Private::make_push_back_container<make_vector, std::vector<T>> Base;
-	make_vector() { }
-	explicit make_vector(const T& e) : Base(e) {}
+	typedef Private::make_push_back_container
+        < make_vector<T, ElementTypePolicy, ElementCreatePolicy>
+        , std::vector<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
+        Base;
+	explicit make_vector(const ELEMENT& e) : Base(e) {}
+    template <class... ARGS>
+	make_vector(ARGS... args) : Base(args...) { }
 };
 
 /***********************************************************************/
@@ -63,12 +136,30 @@ template <typename T> struct make_vector
 ************************************************************************
 	@details
 ************************************************************************/
-template <typename T> struct make_list
-	: public Private::make_push_back_container<make_list<T>, std::list<T>>
+template < typename T
+         , template <typename T> class ElementTypePolicy = ElementTypePolicyRawType
+         , template <typename T> class ElementCreatePolicy = ElementCreatePolicyConstructor
+         >
+struct make_list
+	: public Private::make_push_back_container
+        < make_list<T, ElementTypePolicy, ElementCreatePolicy>
+        , std::list<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
 {
-	typedef Private::make_push_back_container<make_list, std::list<T>> Base;
-	make_list() { }
-	explicit make_list(const T& e) : Base(e) {}
+	typedef Private::make_push_back_container
+        < make_list<T, ElementTypePolicy, ElementCreatePolicy>
+		, std::list<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
+        Base;
+	explicit make_list(const ELEMENT& e) : Base(e) {}
+    template <class... ARGS>
+	make_list(ARGS... args) : Base(args...) { }
 };
 
 /***********************************************************************/
@@ -77,12 +168,30 @@ template <typename T> struct make_list
 ************************************************************************
 	@details
 ************************************************************************/
-template <typename T> struct make_deque
-	: public Private::make_push_back_container<make_deque<T>, std::deque<T>>
+template < typename T
+         , template <typename T> class ElementTypePolicy = ElementTypePolicyRawType
+         , template <typename T> class ElementCreatePolicy = ElementCreatePolicyConstructor
+         >
+struct make_deque
+	: public Private::make_push_back_container
+        < make_deque<T, ElementTypePolicy, ElementCreatePolicy>
+        , std::deque<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
 {
-	typedef Private::make_push_back_container<make_deque, std::deque<T>> Base;
-	make_deque() { }
-	explicit make_deque(const T& e) : Base(e) {}
+	typedef Private::make_push_back_container
+        < make_deque<T, ElementTypePolicy, ElementCreatePolicy>
+		, std::deque<typename ElementTypePolicy<T>::Type>
+        , T
+        , typename ElementTypePolicy<T>::Type
+        , ElementCreatePolicy<T>
+        >
+        Base;
+	explicit make_deque(const ELEMENT& e) : Base(e) {}
+    template <class... ARGS>
+	make_deque(ARGS... args) : Base(args...) { }
 };
 
 /***********************************************************************/
@@ -91,22 +200,28 @@ template <typename T> struct make_deque
 ************************************************************************
 	@details
 ************************************************************************/
-template <typename T> struct make_set
+template < typename T
+         , template <typename T> class ElementTypePolicy = ElementTypePolicyRawType
+         , template <typename T> class ElementCreatePolicy = ElementCreatePolicyConstructor
+         >
+struct make_set
 {
-	make_set& operator()(const T& e)
+    typedef typename ElementTypePolicy<T>::Type ELEMENT;
+	make_set& operator()(const ELEMENT& e)
 	{
 		c_.insert(e);
 		return *this;
 	}
-	make_set& operator,(const T& e)
+    template <class... ARGS>
+	make_set& operator()(ARGS... args)
 	{
-		c_.insert(e);
+		c_.insert(CREATOR::Create(args...));
 		return *this;
 	}
-	std::set<T> operator()() { return std::move(c_); }
-	operator std::set<T>() { return std::move(c_); }
-	make_set() { }
-	explicit make_set(const T& e) { c_.insert(e); }
+	std::set<T> operator--(int) { return std::move(c_); }
+	explicit make_set(const ELEMENT& e) { c_.insert(e); }
+    template <class... ARGS>
+	make_set(ARGS... args) { c_.insert(CREATOR::Create(args...)); }
 private:
 	std::set<T> c_;
 };

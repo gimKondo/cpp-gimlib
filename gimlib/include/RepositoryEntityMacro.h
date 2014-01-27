@@ -76,10 +76,10 @@ public:									\
 	RPS_TABLE_NAME_DEFINE(table_name)	\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))        \
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))--;		\
 		return o;												\
 	}															\
 	class_name() {											\
@@ -128,11 +128,11 @@ public:															\
 	RPS_TABLE_NAME_DEFINE(table_name)							\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3)			\
-				,RPS_FieldInfo(RPS_VT_##type4, L#name4));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))		\
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))		\
+				(RPS_FieldInfo(RPS_VT_##type4, L#name4))--;		\
 		return o;												\
 	}															\
 	class_name() {											\
@@ -187,12 +187,12 @@ public:															\
 	RPS_TABLE_NAME_DEFINE(table_name)							\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3)			\
-				,RPS_FieldInfo(RPS_VT_##type4, L#name4)			\
-				,RPS_FieldInfo(RPS_VT_##type5, L#name5));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))		\
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))		\
+				(RPS_FieldInfo(RPS_VT_##type4, L#name4))		\
+				(RPS_FieldInfo(RPS_VT_##type5, L#name5))--;		\
 		return o;												\
 	}															\
 	class_name() {											\
@@ -253,13 +253,13 @@ public:															\
 	RPS_TABLE_NAME_DEFINE(table_name)							\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3)			\
-				,RPS_FieldInfo(RPS_VT_##type4, L#name4)			\
-				,RPS_FieldInfo(RPS_VT_##type5, L#name5)			\
-				,RPS_FieldInfo(RPS_VT_##type6, L#name6));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))		\
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))		\
+				(RPS_FieldInfo(RPS_VT_##type4, L#name4))		\
+				(RPS_FieldInfo(RPS_VT_##type5, L#name5))		\
+				(RPS_FieldInfo(RPS_VT_##type6, L#name6))--;		\
 		return o;												\
 	}															\
 	class_name() {											\
@@ -327,14 +327,14 @@ public:															\
 	RPS_TABLE_NAME_DEFINE(table_name)							\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3)			\
-				,RPS_FieldInfo(RPS_VT_##type4, L#name4)			\
-				,RPS_FieldInfo(RPS_VT_##type5, L#name5)			\
-				,RPS_FieldInfo(RPS_VT_##type6, L#name6)			\
-				,RPS_FieldInfo(RPS_VT_##type7, L#name7));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))		\
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))		\
+				(RPS_FieldInfo(RPS_VT_##type4, L#name4))		\
+				(RPS_FieldInfo(RPS_VT_##type5, L#name5))		\
+				(RPS_FieldInfo(RPS_VT_##type6, L#name6))		\
+				(RPS_FieldInfo(RPS_VT_##type7, L#name7))--;		\
 		return o;												\
 	}															\
 	class_name() {											\
@@ -410,15 +410,15 @@ public:															\
 	RPS_TABLE_NAME_DEFINE(table_name)							\
 	static const std::vector<RPS_FieldInfo> FIELD_INFO_LIST(){	\
 		const static std::vector<RPS_FieldInfo> o				\
-			= (GimLib::make_vector<RPS_FieldInfo>()				\
-				,RPS_FieldInfo(RPS_VT_##type1, L#name1)			\
-				,RPS_FieldInfo(RPS_VT_##type2, L#name2)			\
-				,RPS_FieldInfo(RPS_VT_##type3, L#name3)			\
-				,RPS_FieldInfo(RPS_VT_##type4, L#name4)			\
-				,RPS_FieldInfo(RPS_VT_##type5, L#name5)			\
-				,RPS_FieldInfo(RPS_VT_##type6, L#name6)			\
-				,RPS_FieldInfo(RPS_VT_##type7, L#name7)			\
-				,RPS_FieldInfo(RPS_VT_##type8, L#name8));		\
+			= GimLib::make_vector<RPS_FieldInfo>				\
+				(RPS_FieldInfo(RPS_VT_##type1, L#name1))		\
+				(RPS_FieldInfo(RPS_VT_##type2, L#name2))		\
+				(RPS_FieldInfo(RPS_VT_##type3, L#name3))		\
+				(RPS_FieldInfo(RPS_VT_##type4, L#name4))		\
+				(RPS_FieldInfo(RPS_VT_##type5, L#name5))		\
+				(RPS_FieldInfo(RPS_VT_##type6, L#name6))		\
+				(RPS_FieldInfo(RPS_VT_##type7, L#name7))		\
+				(RPS_FieldInfo(RPS_VT_##type8, L#name8))--;		\
 		return o;												\
 	}															\
 	class_name() {											\

@@ -36,6 +36,18 @@ std::map<int,int> makeTestMap() {
 	for (int i = 0; i < 16; ++i) { numPairs[i] = i * 2; }
 	return numPairs;
 }
+//-----------------------------------
+// テスト用クラス
+//-----------------------------------
+struct Widget
+{
+    Widget(int a, double b, const std::string& c)
+        : a_(a), b_(b), c_(c)
+    {}
+    int         a_;
+    double      b_;
+    std::string c_;
+};
 
 //-----------------------------------
 // テストケース
@@ -129,6 +141,71 @@ TEST(TestStlExt, concat)
 	nums1|concat(nums2);
 	EXPECT_EQ (6, nums1.size());
 }
+
+
+//make_vector
+TEST(TestStlExt, makeVector＠Normal)
+{
+	const auto trg = GimLib::make_vector<int>(1)(2)(3)--;
+    EXPECT_EQ( 3, trg.size());
+	EXPECT_EQ( 1, trg[0]);
+	EXPECT_EQ( 2, trg[1]);
+	EXPECT_EQ( 3, trg[2]);
+}
+//make_vector
+TEST(TestStlExt, makeVector＠SharedPtr)
+{
+    using namespace GimLib;
+	const auto trg = make_vector<Widget, ElementTypePolicySharedPtr, ElementCreatePolicyMakeShared>
+        (1, 3.14, "hoge")(2, 2.72, "fuga")--;
+    EXPECT_EQ( 2, trg.size());
+	EXPECT_EQ( 1, trg[0]->a_);
+	EXPECT_DOUBLE_EQ( 3.14, trg[0]->b_);
+	EXPECT_EQ( 2, trg[1]->a_);
+	EXPECT_DOUBLE_EQ( 2.72, trg[1]->b_);
+}
+
+//make_list
+TEST(TestStlExt, makeList＠Normal)
+{
+	const auto trg = GimLib::make_list<int>(1)(2)(3)--;
+    EXPECT_EQ( 3, trg.size());
+	EXPECT_EQ( 1, trg.front());
+}
+//make_list
+TEST(TestStlExt, makeList＠SharedPtr)
+{
+    using namespace GimLib;
+	const auto trg = make_list<Widget, ElementTypePolicySharedPtr, ElementCreatePolicyMakeShared>
+        (1, 3.14, "hoge")(2, 2.72, "fuga")--;
+    EXPECT_EQ( 2, trg.size());
+    const auto fst = trg.front();
+	EXPECT_EQ( 1, fst->a_);
+	EXPECT_DOUBLE_EQ( 3.14, fst->b_);
+}
+
+//make_deque
+TEST(TestStlExt, makeDeque＠Normal)
+{
+	const auto trg = GimLib::make_deque<int>(1)(2)(3)--;
+    EXPECT_EQ( 3, trg.size());
+	EXPECT_EQ( 1, trg[0]);
+	EXPECT_EQ( 2, trg[1]);
+	EXPECT_EQ( 3, trg[2]);
+}
+//make_deque
+TEST(TestStlExt, makeDeque＠SharedPtr)
+{
+    using namespace GimLib;
+	const auto trg = make_deque<Widget, ElementTypePolicySharedPtr, ElementCreatePolicyMakeShared>
+        (1, 3.14, "hoge")(2, 2.72, "fuga")--;
+    EXPECT_EQ( 2, trg.size());
+	EXPECT_EQ( 1, trg[0]->a_);
+	EXPECT_DOUBLE_EQ( 3.14, trg[0]->b_);
+	EXPECT_EQ( 2, trg[1]->a_);
+	EXPECT_DOUBLE_EQ( 2.72, trg[1]->b_);
+}
+
 //make_map
 TEST(TestStlExt, makeMap)
 {

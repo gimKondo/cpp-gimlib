@@ -17,13 +17,13 @@ RPS_ENTITY_CLASS5(BirdEntity, Profile, INT, ID, STRING, Species, STRING, Japanes
 //initialize repository for test
 std::vector<BirdEntity> makeProfileTableMock()
 {
-	return GimLib::make_vector<BirdEntity>()
+	return GimLib::make_vector<BirdEntity>
 		(BirdEntity(1, L"Passer montanus"		, L"スズメ"			, L"Passeridae"	, 14.0))
 		(BirdEntity(2, L"Erithacus akahige"		, L"コマドリ"		, L"Turdidae"	, 14.0))
 		(BirdEntity(3, L"Sturnus cineraceus"	, L"ムクドリ"		, L"Sturnidae"	, 24.0))
 		(BirdEntity(4, L"Turdus naumanni"		, L"ツグミ"			, L"Turdidae"	, 24.0))
 		(BirdEntity(5, L"Parus varius"			, L"ヤマガラ"		, L"Paridae"	, 14.0))
-		(BirdEntity(6, L"Parus minor"			, L"シジュウカラ"	, L"Paridae"	, 14.5));
+		(BirdEntity(6, L"Parus minor"			, L"シジュウカラ"	, L"Paridae"	, 14.5))--;
 }
 
 
